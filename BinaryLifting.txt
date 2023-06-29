@@ -1,0 +1,59 @@
+<snippet>
+	<content><![CDATA[
+struct Lift{
+    int n;
+    vector<array<int, 20>> lift;
+    vector<int> Depth;
+    vector<int> Parent;
+    Lift(vector<vector<int>> &adj) {
+        n =sz(adj);
+        lift.resize(n);
+        Depth.resize(n);
+        Parent.resize(n);
+        fill(all(Depth), 0);
+        for (int i=0;i<n;i++)
+            lift[i].fill(-1);
+        Dfs(0, -1, adj);
+        for (int j=1;j<20;j++) {
+            for (int i = 0 ; i < n ; i++) {
+                lift[i][j]=lift[i][j-1];
+                if (lift[i][j]!=-1)
+                    lift[i][j] = lift[lift[i][j]][j - 1];
+            }
+        }
+    }
+    void Dfs(int i, int p, vector<vector<int>> &adj) {
+        lift[i][0] = p;
+        for (auto &u : adj[i]) {
+            if (u == p)  continue;
+            Parent[u] = i;
+            Depth[u] = Depth[i] + 1;
+            Dfs(u, i, adj);
+        }
+    }
+    int KthAncestor(int node, int d) {
+        for (int i = 0 ; i < 20 ; i++) {
+            if (node != -1 && (d >> i) & 1) node = lift[node][i];
+        }
+        return node;
+    }
+    int Lca(int x, int y) {
+        if (Depth[x] > Depth[y])   swap(x, y);
+        y = KthAncestor(y, Depth[y] - Depth[x]);
+        if (y == x)  return x;
+        for (int i = 19 ; i >= 0 ; i--) {
+            if (lift[y][i] != lift[x][i])    x = lift[x][i], y = lift[y][i];
+        }
+        return lift[x][0];
+    }
+    int Distance(int node1,int node2){
+        int dis = Depth[node1] + Depth[node2] - 2*Depth[Lca(node1,node2)];
+        return dis;
+    }
+};
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>Lifting</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.c++</scope>
+</snippet>

@@ -1,0 +1,147 @@
+<snippet>
+	<content><![CDATA[
+const int Number = 10000005;
+
+vector <bool> Prime(Number , true);
+vector <int> spf(Number , Number);
+
+void Sieve() {
+  Prime[0] = false;
+  Prime[1] = false;
+  for (int i = 2 ; i < Number ;i ++) {
+      if (Prime[i]){
+      spf[i] = i;
+      for (int j = 2*i ; j < Number ;j += i){
+          Prime[j] = false;
+          spf[j] = min (spf[j] , i);
+      }
+    }
+  }
+}
+
+ll power(ll x , ll y , ll p){
+    ll res = 1;
+    x = x % p;
+    while ( y>0 ){
+        if (y & 1)
+            res = (res * x) % p;
+        y = y >> 1;
+        x = (x * x) % p;
+    }
+    return (res + p) % p;
+}
+
+ll modinv(ll x){
+    return power(x , M - 2 , M);
+}
+
+ll sum(ll n){
+    return ((((n % M) * ((n + 1) %M)) % M) * modinv(2)) % M;
+}
+
+vector <ll> divisors(ll n){
+    vi num;
+    for (ll i = 1 ; 1ll*i*i <= n ; i++){
+        if (n % i == 0){
+            if (n/i == i)
+                num.pb(i);
+            else{
+                num.pb(i);
+                num.pb(n/i);
+            }
+        }
+    }
+    return num;
+}
+vector <ll> PrimeDivisors(ll n){
+    vector <ll> ans;
+    set <ll> s;
+    for (ll i = 2; 1ll* i * i <= n ; i++){
+        while (n % i == 0){
+            s.insert(i);
+            n /= i;
+        }
+    }
+    if (n > 1)
+        s.insert(n);
+    for (auto x : s){
+        ans . pb(x);
+    }
+    return ans;
+}
+
+// TC --> O(sqrt(n)) 
+// To calculate sum of divisors of a number
+
+ll divisorSum(ll n){
+    ll l = 1;
+    ll ans = 0;
+    while (l <= n){
+        ll k = n / l;
+        ll r = n / k;
+        k %= M;
+        ans += ((sum(r) - sum(l - 1) %M) * k) % M;
+        ans %= M;
+        l = r + 1;
+    }
+    ans = ans % M;
+    if (ans < 0){
+        return ans+M;
+    }else{
+        return ans;
+    }
+}
+
+// Euler Totient 
+
+ll phi (ll n) {
+    ll result = n;
+    for (ll i = 2 ; i*i <= n ; i++) {
+        if (n%i == 0){
+            while(n % i == 0)
+                n /= i;
+            result -= result / i;
+        }
+    }
+    if (n > 1)
+        result -= result / n;
+    return result;
+}
+
+// Factorial Calculation
+
+ll inverse(int n , int m){
+    if(n == 1){
+        return 1;
+    }else{
+        return inverse(m%n , m) * (m-m/n)%m;
+    }
+}
+
+// Change Acc. to constraints
+
+const ll fac_size = 200005;
+ll fac[fac_size+1] , inv[fac_size+1];
+
+void Cal_Factorial(){
+    fac[0] = 1;
+    rep(i,1,fac_size+1){
+        fac[i] = mod_mul(fac[i-1] , i , M);
+    }
+    inv[fac_size] = inverse(fac[fac_size] , M);    
+    for(int i = fac_size ; i > 0 ; i--){
+        inv[i - 1] = mod_mul(inv[i] , i , M);
+    }
+}
+
+ll C(ll n , ll r){
+    ll val = 1LL * (fac[n] * inv[r]%M * inv[n-r]%M);
+    return val;
+}
+
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>numbertheory</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.c++</scope>
+</snippet>

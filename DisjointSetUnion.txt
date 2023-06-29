@@ -1,0 +1,73 @@
+<snippet>
+	<content><![CDATA[
+class DSU {
+public:
+    vector <int> parent;
+    vector <int> size;
+    vector <int> rank;
+
+public:
+    DSU(int n){
+        for(int i = 0 ; i < n ; i++){
+            parent.push_back(i);
+            size.push_back(1);
+            rank.push_back(0);
+        }
+    }
+
+public:
+    int get(int node){
+        if( parent[node] == node){
+            return node;
+        }
+        return parent[node] = get(parent[node]);
+    }
+
+public:
+    bool connected(int u , int v){
+        int pu = get(u);
+        int pv = get(v);
+        return (pu == pv);
+    }
+
+public:
+     bool uniSize(int u, int v){
+        int pu = get(u) , pv = get(v);
+        if(pu == pv)
+            return true;
+        
+        if(size[pu] < size[pv]){
+            parent[pu] = pv;
+            size[pv] += size[pu];
+        }
+        else{
+            parent[pv] = pu;
+            size[pu] += size[pv];
+        }
+        return false;
+    }
+
+public:
+    void uniRank(int u,int v){
+        int pu = get(u) , pv = get(v);
+        if(pu == pv){
+            return;
+        }
+
+        if(rank[pu] < rank[pv]){
+            parent[pu] = pv;
+        }else if(rank[pv] < rank[pu]){
+            parent[pv] = pu;
+        }
+        else{
+            parent[pu] = pv;
+            rank[pv]++;
+        }
+    }
+};
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>DSU_1</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.c++</scope>
+</snippet>

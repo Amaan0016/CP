@@ -1,0 +1,79 @@
+<snippet>
+	<content><![CDATA[
+class segTree{
+    public:
+    segTree *left, *right;
+    ll lmost, rmost, sum, upval;
+    segTree(const vi &a, ll l, ll n){
+        lmost = l;
+        rmost = n;
+        upval = 0;
+        if(l==n){
+            sum = a[l];
+        }
+        else{
+            ll m = (l + n) / 2;
+            left = new segTree(a, l, m);
+            right = new segTree(a, m+1, n);
+            recalc();
+        }
+    }
+    void recalc(){
+        if(lmost==rmost)    return;
+        sum = min(left->sum, right->sum);
+    }
+    void pointUpdate(ll indx, ll val){
+        if(lmost==rmost){
+            sum = val;
+            return;
+        }
+        if(left->rmost>=indx){
+            left->pointUpdate(indx, val);
+        }
+        else if(right->lmost<=indx){
+            right->pointUpdate(indx, val);
+        }
+        recalc();
+    }
+    ll rangeMin(ll l, ll r){
+        if(l>rmost || r<lmost){
+            return 1e18;
+        }
+        if(l<=lmost && r>=rmost){
+            return sum;
+        }
+        if(upval!=0){
+            left->rangeUpdate(lmost, rmost, upval);
+            right->rangeUpdate(lmost, rmost, upval);
+            upval = 0;
+        }
+        return min(left->rangeMin(l, r), right->rangeMin(l, r));
+    }
+    void rangeUpdate(ll l, ll r, ll val){
+        if(l > rmost || r < lmost){
+            return;
+        }
+ 
+        if(l <= lmost && r >= rmost) {
+            upval += val;
+            sum += val;
+            return;
+        }
+ 
+        if(upval != 0) {
+            left->rangeUpdate(lmost, rmost, upval);
+            right->rangeUpdate(lmost, rmost, upval);
+            upval = 0;
+        }
+ 
+        left->rangeUpdate(l, r, val);
+        right->rangeUpdate(l, r, val);
+        recalc();
+    }
+};
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>Lazy</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.c++</scope>
+</snippet>
